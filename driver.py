@@ -255,3 +255,124 @@ class Lakeshore350:
             self.tcp_interface.sendto(b'OUTMODE %d,%d,%d,0\r\n'%(output, mode, input), (self.IPaddress, 7777))
         else:
             raise ValueError('Heater output, mode, or input outside of allowed range!')
+
+
+class Lakeshore372:
+    def __init__(self, address, channames):
+        '''
+        Constructor
+
+        Parameters
+        ----------
+        address : str
+            IP address of Lakeshore box.
+        channames : dict
+            Dictionary mapping channel numbers (1-16) to channel name strings.
+
+        Returns
+        -------
+        None
+        '''
+        self.IPaddress = address
+        self.channel_names = channames
+
+        self.tcp_interface = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.tcp_interface.connect((self.IPaddress, 7777))
+        self.tcp_interface.settimeout(1.0)
+    
+
+    def query_temp(self, channum):
+        '''
+        Request temperature measurements from box.
+
+        Parameters
+        ----------
+        channum : int
+            Channel number to query
+
+        Returns
+        -------
+        None
+        '''
+        self.tcp_interface.sendto(bytes('KRDG? {}\r\n'.format(channum), 'utf-8'),
+                                  (self.IPaddress, 7777))
+
+
+    def query_r(self, channum):
+        '''
+        Request resistance measurements from box.
+
+        Parameters
+        ----------
+        channum : int
+            Channel number to query
+
+        Returns
+        -------
+        None
+        '''
+        self.tcp_interface.sendto(bytes('SRDG? {}\r\n'.format(channum), 'utf-8'),
+                                  (self.IPaddress, 7777))
+
+
+    def read_queue(self):
+        '''
+        Read whatever data is in the queue.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        output : str
+            Contents of the queue.
+        '''
+        output, _ = self.tcp_interface.recvfrom(2048)
+        return output.decode("utf-8")
+
+
+    def get_temps(self):
+        '''
+        Request a temperature measurement and then get it from 
+        the queue, split merrily into a dictionary indexed by 
+        channel name.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        temps : dict
+            Measured temperatures
+        '''
+        temps = {}
+        for channum in self.channel_names:
+            self.query_temp(channum)
+            output = self.read_queue()
+            temps[channum] = float(output)
+        return temps
+
+
+    def get_rs(self):
+        '''
+        Request a resistance measurement and then get it from 
+        the queue, split merrily into a dictionary indexed by 
+        channel name.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        rs : dict
+            Measured resistances.
+        '''
+        rs = {}
+        for channum in self.channel_names:
+            self.query_r(channum)
+            output = self.read_queue()
+            rs[channum] = float(output)
+        return rs
