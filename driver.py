@@ -278,7 +278,7 @@ class Lakeshore372:
 
         self.tcp_interface = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.tcp_interface.connect((self.IPaddress, 7777))
-        self.tcp_interface.settimeout(1.0)
+        self.tcp_interface.settimeout(10.0)
     
 
     def query_temp(self, channum):
@@ -315,6 +315,23 @@ class Lakeshore372:
                                   (self.IPaddress, 7777))
 
 
+    def query_excitation(self, channum):
+        '''
+        Request excitation powers.
+
+        Parameters
+        ----------
+        channum : int
+            Channel number to query
+
+        Returns
+        -------
+        None
+        '''
+        self.tcp_interface.sendto(bytes('RDGPWR? {}\r\n'.format(channum), 'utf-8'),
+                                  (self.IPaddress, 7777))
+        
+        
     def read_queue(self):
         '''
         Read whatever data is in the queue.
@@ -376,3 +393,26 @@ class Lakeshore372:
             output = self.read_queue()
             rs[channum] = float(output)
         return rs
+
+
+    def get_excitations(self):
+        '''
+        Request excitation powers and then get it from 
+        the queue, split merrily into a dictionary indexed by 
+        channel name.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        rs : dict
+            Measured resistances.
+        '''
+        excitations = {}
+        for channum in self.channel_names:
+            self.query_excitation(channum)
+            output = self.read_queue()
+            excitations[channum] = float(output)
+        return excitations
