@@ -6,12 +6,12 @@ from driver import Lakeshore372
 from pybluefors.control import TemperatureController
 
 # user settings
-output_folder = '/home/mryoung/fridge_logs/window_test/'
-ls218_port = '/dev/ttyr02'
+output_folder = '/home/mryoung/fridge_logs/window_test_teflon/'
+ls218_port = '/dev/ttyr01'
 ls372_ip = '192.168.1.40'
 tc_ip = '192.168.1.20'
-chans218 = ['50BC','50BE','50K-stage','empty','4BC','4BE','50K-shield-upper','50-K-shield-lower']
-chans372 = ['1BC','1BE','MKID_upper','MKID-lower']
+chans218 = ['50BC','50BE','50TC','50TE','4BC','4BE','50K-stage','50K-shield_lower']
+chans372 = ['1BC','1BE','1TC','1TE','mK_assembly']
 chanstc = ['50K-flange','4K-flange','Still-flange']
 sample_interval = 60 #seconds
 

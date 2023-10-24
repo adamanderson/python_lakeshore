@@ -48,13 +48,34 @@ class Lakeshore218:
         temps : dict
             Measured temperatures
         '''
-        self.serial_interface.write(b'KRDG?\r\n'.encode())
+        self.serial_interface.write(b'KRDG?\r\n')
         time.sleep(0.1) # wait for response from slow device
         output = self.serial_interface.read(self.serial_interface.inWaiting()).decode()
         temps = {self.channel_names[jchan]: float(output.split(',')[jchan]) \
                  for jchan in range(len(self.channel_names))}
         return temps
 
+    def get_voltage(self):
+        '''
+        Request a voltage measurement and then get it from
+        the queue, split merrily into a dictionary indexed by
+        channel name.
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        volts : dict
+            Measured voltages
+        '''
+        self.serial_interface.write(b'SRDG?\r\n')
+        time.sleep(0.1) # wait for response from slow device
+        output = self.serial_interface.read(self.serial_interface.inWaiting()).decode()
+        volts = {self.channel_names[jchan]: float(output.split(',')[jchan]) \
+                 for jchan in range(len(self.channel_names))}
+        return volts
 
 class Lakeshore350:
     def __init__(self, address, channames):
@@ -368,7 +389,7 @@ class Lakeshore372:
         for channum in self.channel_names:
             self.query_temp(channum)
             output = self.read_queue()
-            temps[channum] = float(output)
+            temps[self.channel_names[channum]] = float(output)
         return temps
 
 
@@ -391,7 +412,7 @@ class Lakeshore372:
         for channum in self.channel_names:
             self.query_r(channum)
             output = self.read_queue()
-            rs[channum] = float(output)
+            rs[self.channel_names[channum]] = float(output)
         return rs
 
 
@@ -414,5 +435,5 @@ class Lakeshore372:
         for channum in self.channel_names:
             self.query_excitation(channum)
             output = self.read_queue()
-            excitations[channum] = float(output)
+            excitations[self.channel_names[channum]] = float(output)
         return excitations
