@@ -6,8 +6,8 @@ import os
 
 # user settings
 output_folder = '/home/slimjim/fridge_logs/'
-ls218_50K_port = '/dev/ttyr00'
-ls218_4K_port = '/dev/ttyr01'
+ls218_50K_port = '/dev/ttyr01'
+ls218_4K_port = '/dev/ttyr00'
 chans218_50K = ['50K head', '50K outer ring', '50K inner ring', '50K hand hole plate', '50K top of shield', '4K top of shield']
 chans218_4K = ['4K head', '4K heat strap (bus side)', '4K stage (near bus)', '4K stage (opposite bus)']
 chans_voltage_all = chans218_50K + chans218_4K
