@@ -1,5 +1,5 @@
 # python_lakeshore
-Some python classes for control of Lakeshore devices. The Lakeshore 350 and 218 temperature controllers are currently supported.
+Some python classes for control of Lakeshore devices. The Lakeshore 350 and 218 temperature controllers and 372 AC resistance bridge are currently supported.
 
 ## Usage
 Instantiate a client (e.g. for a Lakeshore 350 temperature controller):
